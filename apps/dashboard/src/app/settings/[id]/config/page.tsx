@@ -80,20 +80,7 @@ export default async function ConfigPage({ params }: { params: Promise<{ id: str
             </div>
           </div>
           
-          {(plan === 'Free' || plan === 'None') && (
-            <Link 
-              href={`/pricing?accountId=${installation.githubAccountId}`}
-              className={clsx(
-                "inline-flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm uppercase tracking-wide transition-all shadow-sm cursor-pointer",
-                plan === 'None' 
-                  ? "bg-red-600 text-white hover:bg-red-700 hover:shadow-red-600/20" 
-                  : "bg-zinc-900 text-white hover:bg-zinc-800 hover:shadow-zinc-900/20"
-              )}
-            >
-              <Zap className="w-4 h-4" />
-              {plan === 'None' ? 'Subscribe Now' : 'Upgrade Plan'}
-            </Link>
-          )}
+          {/* Upgrade CTA removed — features unlocked for all plans */}
         </div>
       </header>
 
@@ -129,11 +116,11 @@ export default async function ConfigPage({ params }: { params: Promise<{ id: str
               </div>
               
               {plan === 'None' ? (
-                 <p className="text-sm text-red-700 font-medium">
-                   You must subscribe to a plan (even Free) to enable AI reviews.
+                 <p className="text-sm text-zinc-600 font-medium">
+                   No subscription required — AI review features are unlocked.
                  </p>
               ) : (
-                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-zinc-600 mt-2">
+                  <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-zinc-600 mt-2">
                   <div className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-zinc-300"></span>
                     RAG snippets: <span className="font-bold text-zinc-900">{limits.ragK}</span>

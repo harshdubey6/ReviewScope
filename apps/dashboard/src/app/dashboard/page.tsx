@@ -9,7 +9,7 @@ import { getUserOrgIds } from "@/lib/github";
 import { DashboardSearch } from "./dashboard-search";
 import { RepoRow } from "./repo-row";
 import { DashboardAutoRefresh } from "../../components/dashboard-auto-refresh";
-import { getPlanLimits, PlanTier } from "../../../../worker/src/lib/plans";
+import { getPlanLimits } from "../../../../worker/src/lib/plans";
 import { formatDistanceToNow } from "date-fns";
 
 export const dynamic = 'force-dynamic';
@@ -365,9 +365,9 @@ export default async function DashboardPage({
                   const limits = getPlanLimits(inst.planId, inst.expiresAt);
                   const activeRepos = userRepos.filter(r => r.installationId === inst.id).length;
 
-                  const planStyles = {
-                    [PlanTier.FREE]: "bg-zinc-100 text-zinc-600 border border-zinc-200",
-                    [PlanTier.PRO]: "bg-blue-50 text-blue-700 border border-blue-200",
+                  const planStyles: Record<string, string> = {
+                    FREE: "bg-zinc-100 text-zinc-600 border border-zinc-200",
+                    PRO: "bg-blue-50 text-blue-700 border border-blue-200",
                   };
 
                   return (
@@ -391,14 +391,7 @@ export default async function DashboardPage({
                           <span className="text-zinc-500 font-medium">Context Window</span>
                           <span className="font-bold text-zinc-900">{limits.ragK}</span>
                         </div>
-                        {limits.tier === PlanTier.PRO && (
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="text-zinc-500 font-medium">Features</span>
-                            <span className="font-bold text-primary flex items-center gap-1">
-                              <Zap className="w-3 h-3" /> Advanced
-                            </span>
-                          </div>
-                        )}
+                        {/* Feature tier badges removed — features unlocked for all plans */}
                       </div>
 
                       <Link

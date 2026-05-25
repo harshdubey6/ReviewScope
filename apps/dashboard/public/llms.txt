@@ -21,7 +21,7 @@ ReviewScope is an enterprise-grade, AI-powered code review platform that integra
 - `/repositories`: Interface for managing specific repository settings, enabling/disabling AI review, and manual indexing.
 - `/reviews`: Detailed view of PR review history, including AI assessments, risk analysis, and static analysis findings.
 - `/settings`: User profile management, including display name, notification preferences, and API key management for custom LLM routing.
-- `/pricing`: Subscription management and plan selection. Features dynamic INR/USD pricing detection and plan comparison.
+- `/pricing`: (removed) Subscription and public pricing page removed from this build.
 - `/docs`: Comprehensive documentation for users and developers on setting up and optimizing ReviewScope.
 - `/sponsors`: Page dedicated to acknowledging project contributors and sponsors.
 - `/support`: Contact and help center for users.

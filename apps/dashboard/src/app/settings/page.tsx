@@ -168,7 +168,7 @@ export default async function SettingsPage() {
               Install the ReviewScope GitHub App to see your organizations here.
             </p>
             <a 
-              href="https://github.com/Review-scope/ReviewScope"
+              href="https://github.com/harshdubey6/ReviewScope"
               target="_blank"
               className="inline-flex items-center gap-2 px-8 py-4 bg-zinc-900 text-white rounded-2xl font-bold text-sm uppercase tracking-wide hover:bg-zinc-800 transition-all shadow-xl hover:-translate-y-1"
             >

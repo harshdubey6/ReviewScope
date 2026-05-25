@@ -1,120 +1,65 @@
-# ReviewScope – AI-Powered Code Review Automation
+# ReviewScope
 
-Review Scope is an intelligent PR review platform that combines **static analysis**, **semantic context**, and **AI reasoning** to provide comprehensive, fast code reviews on GitHub.
+ReviewScope is an open-source self-hostable platform for automated, context-aware code reviews. It combines fast static analysis with optional LLM-powered reasoning to surface high-impact issues in pull requests and help maintainers ship safer code.
 
-<img width="1200" height="676" alt="856_1x_shots_so" src="https://github.com/user-attachments/assets/baaa7a26-18b4-438b-b764-eed7abc4e7ba" />
+This repository is a monorepo containing the API, worker, and dashboard applications, plus supporting packages for LLM routing, context assembly (RAG), and static rules.
 
-## Overview
+If you removed pricing UI or paid-tier gating, this README reflects the current codebase where features are available and the public `/pricing` page has been removed.
 
-Review Scope analyzes pull requests end-to-end, evaluating code quality, security, performance, and maintainability. Default deployments use the bundled `Sarvam-M` model unless configured otherwise.
+## Quick Overview
 
-**Key Capabilities:**
+- Static AST-based detectors that run for every PR (free and fast).
+- Optional LLM review stage that can use built-in server-managed models or repository-specific API keys.
+- RAG-enabled context assembly to provide model-aware prompts with repository files and types.
+- Background worker processing with Redis/Bull and PostgreSQL persistence.
 
-- 🔍 **Static Analysis** – AST-based rule detection (no LLM required, always free)
-- 🧠 **AI-Powered Reviews** – Complexity-aware routing between fast (Gemini Flash) and capable (Gemini 3/GPT-5) models
-- 📚 **Semantic RAG** – Retrieves relevant code context from your repository's history
-- ⚡ **Smart Batching** – Handles large PRs by intelligently chunking files
-- 🎯 **Rule Validation** – LLM classifies static findings (valid/false-positive/contextual)
-- **Key policy** – Default deployments may use a server-managed model; you can configure provider keys if desired.
-
-## Technology Stack
-
-**Frontend & Dashboard:**
-
-- Next.js 16 (Turbopack)
-- TailwindCSS
-- NextAuth (GitHub OAuth)
-
-**Backend & Processing:**
-
-- Node.js Worker (background review jobs)
-- Drizzle ORM + PostgreSQL
-- Redis (caching & rate limiting)
-
-**AI & LLM:**
-
-- Sarvam-M (Free default)
-- OpenAI and Gemini models (Pro with BYOK)
-- Context Engine (RAG + chunking)
-
-**Integration:**
-
-- GitHub Webhooks (real-time PR events)
-- GitHub API (PR data, code retrieval)
-
-## Project Structure
+## Repository Layout
 
 ```
-ReviewScope/
-├── apps/
-│   ├── api/                    # REST API & webhooks
-│   ├── dashboard/              # Next.js web app (settings, auth)
-│   └── worker/                 # Node.js background job processor
-├── packages/
-│   ├── context-engine/         # RAG, chunking, layer assembly
-│   ├── llm-core/               # LLM routing, prompting, response parsing
-│   ├── rules-engine/           # Static analysis (JavaScript/TypeScript)
-│   └── security/               # Encryption, masking utilities
-└── tsconfig.base.json          # Shared TypeScript config
+apps/
+  api/         # Hono API: webhooks, REST endpoints, DB migrations
+  worker/      # Background job runner: static rules, RAG, LLM calls
+  dashboard/   # Next.js app: UI for repos, settings, and review viewer
+
+packages/
+  context-engine/  # RAG, retrievers, prompt assembly
+  llm-core/        # Provider adapters, prompts, model selection
+  rules-engine/    # Static analysis rules and parsers
+  security/        # Encryption and masking utilities
+
+README.md
 ```
 
-## Documentation
+## Local Development (short)
 
-- [User Guide](docs/USER_GUIDE.md) - How to install, configure, and use ReviewScope.
-- [Architecture](docs/ARCHITECTURE.md) - Deep dive into the system design and data flow.
-- [Contributing](CONTRIBUTING.md) - Guide for developers who want to contribute to the project.
+Prerequisites: Node.js 18+, PostgreSQL, Redis (or Upstash), GitHub App credentials for webhook integration.
 
-## Setup & Installation
-
-### Prerequisites
-
-- Node.js 18+
-- PostgreSQL 14+
-- Redis URL (docker-compose)
-- GitHub App (for webhooks)
-- LLM API keys (`SARVAM_API_KEY` for Free default, user Gemini/OpenAI keys for Pro)
-
-### 1. Clone & Install
+1. Install dependencies
 
 ```bash
-git clone https://github.com/Review-scope/ReviewScope
-cd ReviewScope
-npm install
+pnpm install
 ```
 
-### 2. Environment Configuration
+2. Copy example env files into each app (see `apps/*/.env.example` if present) and set values for `DATABASE_URL`, `REDIS_URL`, `NEXTAUTH_SECRET`, and GitHub credentials.
 
-Create `.env.local` files in each app:
+3. Run the services in development
 
-**`apps/api/.env.local`**
+```bash
+# API
+pnpm --filter @reviewscope/api dev
 
-```
-DATABASE_URL=postgresql://user:pass@localhost/reviewscope
-GITHUB_APP_ID=123456
-GITHUB_APP_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY..."
-GITHUB_WEBHOOK_SECRET=your_webhook_secret
-```
+# Worker
+pnpm --filter @reviewscope/worker dev
 
-**`apps/worker/.env.local`**
-
-```
-DATABASE_URL=postgresql://user:pass@localhost/reviewscope
-REDIS_URL=https://default:password@redis-url.upstash.io
-SARVAM_API_KEY=your_sarvam_key
-OPENAI_API_KEY=your_openai_key
+# Dashboard
+pnpm --filter @reviewscope/dashboard dev
 ```
 
-**`apps/dashboard/.env.local`**
+Or use `docker compose -f docker-compose.dev.yml up --build` if you prefer containers.
 
-```
-DATABASE_URL=postgresql://user:pass@localhost/reviewscope
-NEXTAUTH_SECRET=generate_with_openssl_rand_base64_32
-NEXTAUTH_URL=http://localhost:3000
-GITHUB_ID=your_github_app_client_id
-GITHUB_SECRET=your_github_app_secret
-```
+## Database
 
-### 3. Database Setup
+Use Drizzle migrations in `apps/api`:
 
 ```bash
 cd apps/api
@@ -122,124 +67,30 @@ npx drizzle-kit generate
 npx drizzle-kit migrate
 ```
 
-### 4. Run Development Servers
+## Notable Notes
 
-**Terminal 1 – API:**
+- The project includes a server-managed default model (`Sarvam-M`) and also supports using per-installation provider keys. Ensure `ENCRYPTION_KEY` is set in the worker environment to decrypt stored API keys.
+- The `/pricing` page and plan-gating logic were removed from the UI in this fork; features are accessible based on your deployment configuration.
 
-```bash
-cd apps/api
-npm run dev
-```
+## Suggested cleanup (files you may want to remove)
 
-**Terminal 2 – Worker:**
+I found several public assets and removed the pricing route. Before deleting more files, confirm which of these you'd like removed:
 
-```bash
-cd apps/worker
-npm run dev
-```
+- `apps/dashboard/public/dodo.jpeg` (payments logo shown in footer)
+- `apps/dashboard/public/openai.svg` (OpenAI logo)
+- `apps/dashboard/public/gemini-color.svg` (Gemini logo)
+- `apps/dashboard/public/hero.png` (marketing hero image)
 
-**Terminal 3 – Dashboard:**
-
-```bash
-cd apps/dashboard
-npm run dev
-```
-
-Dashboard available at `http://localhost:3000`
-
-<!-- Pricing and plan tiers removed — this repository is cleaned of paid-tier enforcement. -->
-
-## Architecture
-
-### Workflow
-
-```
-GitHub PR Event
-    ↓
-API Webhook Handler
-    ↓
-Extract PR diff + fetch repo context
-    ↓
-Queue Review Job (Redis/Bull)
-    ↓
-Worker: Complexity Scorer
-    ↓
-Run Static Rules (AST analysis)
-    ↓
-RAG Retriever (semantic search)
-    ↓
-Context Engine (assemble layers)
-    ↓
-LLM Router (Gemini vs GPT-4)
-    ↓
-Generate Review + Rule Validation
-    ↓
-Post Comment to GitHub PR
-```
-
-### Key Components
-
-**Rules Engine** (`packages/rules-engine/`)
-
-- JavaScript/TypeScript AST parser
-- Detects anti-patterns, security issues, code quality problems
-- Zero LLM cost, always runs
-
-**Context Engine** (`packages/context-engine/`)
-
-- Semantic RAG using Upstash Redis
-- Retrieves relevant code snippets from PR history
-- Assembles system prompt with all context layers
-
-**LLM Core** (`packages/llm-core/`)
-
-- Routes by PR complexity (Gemini for simple, GPT-4 for complex)
-- Injects rule violations into prompt
-- Parses response including rule validation classifications
-
-**Worker** (`apps/worker/`)
-
-- Bull queue for async job processing
-- Executes complexity scorer, rules, RAG, LLM calls
-
-## Configuration & Customization
-
-### Custom Review Prompts
-
-Edit system prompt per repository:
-
-```
-Dashboard → Repositories → [Select] → Settings → Custom Prompt
-```
-
-### LLM Model Selection
-
-Edit `packages/llm-core/src/selectModel.ts`:
-
-```typescript
-// Complexity thresholds for model routing
-if (complexity === 'trivial' || complexity === 'simple') {
-  return 'gemini-2.5-flash-lite'; // Lowest cost / Free
-} else {
-  return 'gemini-3-flash-preview'; // Better reasoning for complex changes
-}
-```
-
-## Support & Contact
-
-📧 **Email:** dubeyharsh320@gmail.com  
-🐙 **GitHub Issues:** [ReviewScope Issues](https://github.com/Review-scope/ReviewScope/issues)
-
-<!-- 💬 **Discussions:** [GitHub Discussions](https://github.com/Review-scope/ReviewScope/discussions) -->
+Reply with the names to delete, or say `delete all` to remove the list above.
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+1. Fork the repository and create a branch for your feature/fix.
+2. Run tests and lint (if present) and open a PR with a clear description.
 
-All PRs are reviewed by ReviewScope! 🤖
+## Support
 
-ReviewScope is proprietary software. See LICENSE file for details. -->
+If you need help running or customizing ReviewScope, reply here or open an issue in the upstream repository.
+
+---
+Updated: May 25, 2026

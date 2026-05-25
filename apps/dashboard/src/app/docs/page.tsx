@@ -160,7 +160,7 @@ export default function DocsPage() {
                   <div className="p-2 bg-purple-100 text-purple-600 rounded-lg">
                     <Settings className="w-6 h-6" />
                   </div>
-                  <h2 className="text-2xl font-black tracking-tight text-zinc-900">Configuration (BYOK)</h2>
+                  <h2 className="text-2xl font-black tracking-tight text-zinc-900">Configuration</h2>
                 </div>
 
                 <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-sm">
@@ -168,8 +168,7 @@ export default function DocsPage() {
                     <div className="flex items-start gap-4 p-4 bg-amber-50 border border-amber-100 rounded-xl text-amber-900 text-sm">
                       <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                       <p className="font-medium">
-                        Free plan uses <strong>Sarvam-M</strong> with a server-managed key. 
-                        Pro plan uses <strong>BYOK</strong>, so you must configure a valid Gemini or OpenAI key in Settings.
+                        ReviewScope provides a server-managed Sarvam-M model by default. You can also configure your own Gemini or OpenAI API keys in Settings to route reviews to those providers.
                       </p>
                     </div>
 
@@ -482,7 +481,7 @@ Reviews
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4 text-left">
-              <a href="https://github.com/Review-scope/ReviewScope/issues" target="_blank" className="group p-6 bg-white border border-zinc-200 rounded-2xl hover:border-zinc-300 hover:shadow-lg transition-all">
+              <a href="https://github.com/harshdubey6/ReviewScope/issues" target="_blank" className="group p-6 bg-white border border-zinc-200 rounded-2xl hover:border-zinc-300 hover:shadow-lg transition-all">
                 <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-xl w-fit group-hover:scale-110 transition-transform">
                   <AlertCircle className="w-6 h-6" />
                 </div>
@@ -490,7 +489,7 @@ Reviews
                 <p className="text-sm text-zinc-500">Found an issue? Open a ticket on our issue tracker and we'll look into it.</p>
               </a>
               
-              <a href="https://github.com/Review-scope/ReviewScope/pulls" target="_blank" className="group p-6 bg-white border border-zinc-200 rounded-2xl hover:border-zinc-300 hover:shadow-lg transition-all">
+              <a href="https://github.com/harshdubey6/ReviewScope/pulls" target="_blank" className="group p-6 bg-white border border-zinc-200 rounded-2xl hover:border-zinc-300 hover:shadow-lg transition-all">
                 <div className="mb-4 p-3 bg-blue-50 text-blue-600 rounded-xl w-fit group-hover:scale-110 transition-transform">
                   <FileCode className="w-6 h-6" />
                 </div>

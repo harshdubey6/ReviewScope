@@ -100,7 +100,7 @@ export function Navbar() {
         <div className="flex items-center gap-2 pl-2">
           {/* GitHub Link */}
           <Link
-            href="https://github.com/Review-scope/ReviewScope" 
+            href="https://github.com/harshdubey6/ReviewScope" 
             target="_blank"
             rel="noopener noreferrer"
             className="hidden md:flex items-center gap-2 px-3 py-1.5 text-sm font-semibold text-zinc-600 hover:text-zinc-900 bg-zinc-50 hover:bg-zinc-100 rounded-full border border-zinc-200 transition-all"
@@ -183,7 +183,7 @@ export function Navbar() {
             ))}
             
             <Link 
-              href="https://github.com/Review-scope/ReviewScope"
+              href="https://github.com/harshdubey6/ReviewScope"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-3 px-4 py-3 text-sm font-semibold rounded-2xl text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 transition-all"

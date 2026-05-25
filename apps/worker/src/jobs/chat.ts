@@ -5,7 +5,7 @@ import { resolveEmbeddingModel, shouldSkipEmbeddings } from '../lib/embedding-mo
 import { CHAT_SYSTEM_PROMPT } from '@reviewscope/llm-core';
 import { db, repositories, installations, configs } from '../../../api/src/db/index.js';
 import { eq, and } from 'drizzle-orm';
-import { getTier, PlanTier } from '../lib/plans.js';
+// Plan gating removed
 
 export interface ChatJobData {
   installationId: number;
@@ -101,11 +101,7 @@ ${parentComment.body}
     assembler.addLayer(userQuestionLayer);
 
     const { provider: llmProvider } = await createConfiguredProvider(dbInst.id);
-    const defaultModel = getTier(dbInst.planId) === PlanTier.FREE
-      ? 'sarvam-m'
-      : llmProvider.name === 'openai'
-        ? 'gpt-4o'
-        : 'gemini-2.5-flash';
+    const defaultModel = llmProvider.name === 'openai' ? 'gpt-4o' : llmProvider.name === 'gemini' ? 'gemini-2.5-flash' : 'sarvam-m';
     const modelName = config?.model || defaultModel;
 
     const assembled = await assembler.assemble({

@@ -327,28 +327,7 @@ githubWebhook.post('/', async (c) => {
     try {
       if (body.includes('re-review')) {
         const [config] = await db.select().from(configs).where(eq(configs.installationId, dbInst.id)).limit(1);
-        if (limits.tier === 'PRO' && !config?.apiKeyEncrypted) {
-          const [owner, repoName] = repo.full_name.split('/');
-          await gh.postComment(
-            installation.id,
-            owner,
-            repoName,
-            issue.number,
-            '## Re-review Blocked\n\nPro plan requires your own API key. Add a Gemini or OpenAI key in Settings first.'
-          );
-          return c.json({ status: 'blocked_missing_api_key' });
-        }
-        if (limits.tier === 'PRO' && config?.provider === 'sarvam') {
-          const [owner, repoName] = repo.full_name.split('/');
-          await gh.postComment(
-            installation.id,
-            owner,
-            repoName,
-            issue.number,
-            '## Re-review Blocked\n\nSarvam is available only on Free plan. On Pro, configure Gemini or OpenAI in Settings.'
-          );
-          return c.json({ status: 'blocked_invalid_provider' });
-        }
+        // Plan gating removed for re-review commands; proceed if repo and installation are active.
 
         // Get PR details first to get the HEAD SHA
         const [owner, name] = repo.full_name.split('/');

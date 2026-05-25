@@ -89,7 +89,7 @@ export default function SupportPage() {
                 If you've found a bug or have a feature request, please open an issue on our GitHub repository.
               </p>
               <a 
-                href="https://github.com/Review-scope/ReviewScope/issues"
+                href="https://github.com/harshdubey6/ReviewScope/issues"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg font-medium text-sm hover:opacity-90 transition-all"

@@ -406,7 +406,7 @@ export default async function AdminPage({
             View Support Page
           </Link>
           <a 
-            href="https://github.com/Review-scope/ReviewScope"
+            href="https://github.com/harshdubey6/ReviewScope"
             target="_blank"
             rel="noopener noreferrer"
             className="px-4 py-2 bg-muted text-foreground rounded-lg text-sm font-medium hover:bg-muted/80 transition-all"

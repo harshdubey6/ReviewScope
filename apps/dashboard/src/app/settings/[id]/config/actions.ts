@@ -10,7 +10,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { createProvider } from "@reviewscope/llm-core";
 import { getUserOrgIds } from "@/lib/github";
-import { getPlanLimits, PlanTier } from "../../../../../../worker/src/lib/plans";
+import { getPlanLimits } from "../../../../../../worker/src/lib/plans";
 
 const configSchema = z.object({
   provider: z.enum(['sarvam', 'gemini', 'openai']),
@@ -26,12 +26,6 @@ export async function verifyApiKey(provider: string, model: string, apiKey: stri
   if (!installation) return { error: 'Unauthorized' };
 
   const limits = getPlanLimits(installation.planId, installation.expiresAt);
-  if (limits.tier === PlanTier.PRO && provider === 'sarvam') {
-    return { error: 'Sarvam is available only on Free plan. Use Gemini or OpenAI on Pro.' };
-  }
-  if (limits.tier === PlanTier.FREE && provider === 'sarvam') {
-    return { success: true };
-  }
 
   let keyToUse = apiKey;
 
@@ -158,16 +152,7 @@ export async function updateConfig(installationId: string, formData: FormData) {
       apiKeyChanged = true;
     }
 
-    if (limits.tier === PlanTier.PRO) {
-      if (provider === 'sarvam') return { error: 'Sarvam is available only on Free plan. Choose Gemini or OpenAI.' };
-      if (!apiKeyEncrypted) return { error: 'Pro plan requires an API key before saving configuration.' };
-    } else {
-      if (provider === 'sarvam') {
-        if (model !== 'sarvam-m') return { error: 'Sarvam provider on Free must use sarvam-m.' };
-      } else if (!apiKeyEncrypted) {
-        return { error: 'Gemini/OpenAI on Free plan requires your own API key.' };
-      }
-    }
+    // Plan gating removed: allow any provider and optional api key storage.
 
     if (existingConfig) {
       await db

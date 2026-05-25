@@ -3,7 +3,7 @@ import { GitHubClient } from '../lib/github.js';
 import { parseDiff } from '../lib/parser.js';
 import { db, reviews } from '../../../api/src/db/index.js';
 import { eq, and } from 'drizzle-orm';
-import { PlanTier } from '../lib/plans.js';
+// Plan gating removed
 import { checkRateLimits, logReviewUsage, RateLimitError } from '../lib/rate-limit.js';
 import { Queue, Job } from 'bullmq';
 import { createHash } from 'crypto';
@@ -186,11 +186,7 @@ export async function processReviewJob(data: ReviewJobData, _job?: Job): Promise
     // If we have very few changes, skip AI to save cost and avoid hallucinations
     const totalAdditions = filteredFiles.reduce((sum, f) => sum + f.additions.length, 0);
     const totalDeletions = filteredFiles.reduce((sum, f) => sum + f.deletions.length, 0);
-    if ((totalAdditions + totalDeletions) < 10 && filteredFiles.length === 1 && limits.tier === PlanTier.FREE) {
-         console.info('[Worker] Skipping AI for tiny diff (Free Tier optimization)');
-         // We still run static analysis though? 
-         // For now, let's just proceed, but maybe we can return early if it's REALLY empty.
-    }
+        // Tiny-diff logging removed — no plan-based skip
     
     // Check for previous identical run (Optimization)
     // Hash the *filtered* file content/diffs to see if anything substantial changed
@@ -269,9 +265,7 @@ export async function processReviewJob(data: ReviewJobData, _job?: Job): Promise
     const isRepoActive = dbRepo.status === 'active';
 
     if (optimizedDiffLength < 50) {
-        skipReason = 'Change too small for meaningful AI review';
-    } else if (aiReviewFiles.length === 1 && optimizedDiffLength < 200 && limits.tier === PlanTier.FREE) {
-        skipReason = 'Tiny diff (Free Tier optimization)';
+      skipReason = 'Change too small for meaningful AI review';
     } else if (!isRepoActive) {
         skipReason = 'Repository is not active (AST only)';
     }

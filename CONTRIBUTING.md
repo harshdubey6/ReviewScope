@@ -50,9 +50,9 @@ If you want to work on something:
 - `apps/`: Contains the deployable applications (API, Dashboard, Worker).
 - `packages/`: Contains shared libraries and internal packages (Context Engine, LLM Core, Rules Engine, Security).
 
-## Report bugs using Github's [issue tracker](https://github.com/Review-scope/ReviewScope/issues)
+## Report bugs using Github's [issue tracker](https://github.com/harshdubey6/ReviewScope/issues)
 
-We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/Review-scope/ReviewScope/issues/new); it's that easy!
+We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/harshdubey6/ReviewScope/issues/new); it's that easy!
 
 ## License
 

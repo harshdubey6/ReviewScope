@@ -38,7 +38,7 @@ export function ConfigForm({
   initialConfig,
 }: ConfigFormProps) {
   const router = useRouter();
-  const isFreePlan = plan === 'Free';
+  // Plan gating removed — all features unlocked
 
   const [provider, setProvider] = useState(initialConfig?.provider || 'gemini'); // Default to Gemini
   const [model, setModel] = useState(initialConfig?.model || 'gemini-2.5-flash-lite');
@@ -111,20 +111,13 @@ export function ConfigForm({
     }
   };
 
-  const canSave =
-    provider === 'sarvam'
-      ? isFreePlan
-      : verifyStatus === 'valid' || (!apiKey && !!initialConfig?.apiKeyEncrypted);
+  const canSave = verifyStatus === 'valid' || !!apiKey || !!initialConfig?.apiKeyEncrypted;
 
   return (
     <div className="bg-white border border-zinc-200 rounded-3xl shadow-xl shadow-zinc-200/50 overflow-hidden">
       <div className="px-10 py-8 border-b border-zinc-100 bg-zinc-50/50">
         <h2 className="text-xl font-black text-zinc-900 tracking-tight">AI Review Configuration</h2>
-        <p className="text-sm text-zinc-500 mt-1 font-medium">
-          {isFreePlan
-            ? 'Free defaults to Sarvam-M. You can also use your own Gemini/OpenAI key.'
-            : 'Pro plan requires your own Gemini or OpenAI API key (Sarvam disabled due to RAG).'}
-        </p>
+        <p className="text-sm text-zinc-500 mt-1 font-medium">Configure the AI provider and model for reviews. You can use the built-in Sarvam model or provide your own Gemini/OpenAI key.</p>
       </div>
 
       <form
@@ -153,7 +146,7 @@ export function ConfigForm({
                 }}
                 className="w-full h-12 rounded-xl bg-white border border-zinc-200 px-4 text-sm font-medium focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all appearance-none cursor-pointer"
               >
-                <option value="sarvam" disabled={!isFreePlan}>Sarvam {isFreePlan ? '(Free default)' : '(Not available on Pro)'}</option>
+                <option value="sarvam">Sarvam (Default)</option>
                 <option value="gemini">Google Gemini</option>
                 <option value="openai">OpenAI</option>
               </select>
@@ -277,12 +270,12 @@ export function ConfigForm({
 
         <Section
           title="API Configuration"
-          description={provider === 'sarvam' ? 'Sarvam requires a user-provided API key.' : 'Enter your API key to enable the selected provider.'}
+          description={provider === 'sarvam' ? 'Sarvam can be used with your own key or the built-in model.' : 'Enter your API key to enable the selected provider.'}
           icon={<Key className="w-5 h-5 text-emerald-600" />}
         >
           {provider === 'sarvam' && (
             <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <p className="text-sm text-yellow-800">To use Sarvam, you must provide your own API key.</p>
+              <p className="text-sm text-yellow-800">Sarvam can be used with your own API key or the server-provided model.</p>
             </div>
           )}
           <div className="flex gap-3">
@@ -357,22 +350,12 @@ export function ConfigForm({
           <div className="relative">
             <textarea
               name="customPrompt"
-              disabled={plan === 'Free'}
               defaultValue={initialConfig?.customPrompt || ''}
               placeholder="e.g. Focus on security vulnerabilities, prefer functional programming patterns..."
               className={clsx(
-                'w-full min-h-[120px] rounded-xl p-4 border border-zinc-200 bg-white text-sm font-medium resize-y focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all',
-                plan === 'Free' && 'opacity-50 cursor-not-allowed bg-zinc-50'
+                'w-full min-h-[120px] rounded-xl p-4 border border-zinc-200 bg-white text-sm font-medium resize-y focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all'
               )}
             />
-            {plan === 'Free' && (
-              <div className="absolute inset-0 flex items-center justify-center backdrop-blur-[1px] rounded-xl">
-                <div className="px-4 py-2 bg-white/90 border border-amber-200 shadow-lg rounded-full flex items-center gap-2 text-xs font-bold text-amber-700 uppercase tracking-wide">
-                  <Lock className="w-3.5 h-3.5" />
-                  Pro Feature
-                </div>
-              </div>
-            )}
           </div>
           <p className="text-xs text-zinc-400 font-medium mt-2">
             These instructions will be appended to the system prompt for every review.

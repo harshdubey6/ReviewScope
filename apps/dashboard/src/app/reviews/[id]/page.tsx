@@ -117,24 +117,34 @@ export default async function ReviewDetailsPage({ params }: { params: Promise<{ 
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
         {/* Sidebar: Executive Assessment */}
         <div className="lg:col-span-1 space-y-8">
-           <section className="bg-zinc-900 text-white rounded-[2.5rem] p-10 space-y-8 shadow-2xl relative overflow-hidden">
-              <Sparkles className="absolute top-10 right-10 w-24 h-24 text-white/5" />
-              <div className="space-y-2">
-                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-primary">Executive Intelligence</h3>
-                <h2 className="text-3xl font-black tracking-tight italic">Summary Analysis</h2>
+           <section className="bg-gradient-to-br from-zinc-900 to-zinc-800 text-white rounded-2xl p-6 shadow-lg relative">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-xs font-black uppercase tracking-[0.3em] text-primary">Executive Intelligence</h3>
+                  <h2 className="text-2xl font-extrabold tracking-tight">Summary Analysis</h2>
+                </div>
+                <div className="text-sm text-zinc-400">&nbsp;</div>
               </div>
-              <p className="text-lg font-medium leading-relaxed text-zinc-400 border-l-4 border-primary pl-6">
-                {summary}
-              </p>
-              <div className="space-y-4 pt-8">
-                <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10">
-                   <span className="text-xs font-bold uppercase tracking-widest text-zinc-500">Stability</span>
-                   <span className={clsx("text-sm font-black uppercase italic", assessment.mergeReadiness === 'Recommended' ? 'text-green-400' : 'text-amber-400')}>
-                     {assessment.mergeReadiness}
-                   </span>
+
+              <div className="mt-4 grid grid-cols-1 gap-4">
+                <div className="bg-zinc-950/60 border border-white/6 rounded-xl p-4">
+                  <h4 className="text-sm font-bold text-white/90 mb-2">Summary of Changes</h4>
+                  <div className="text-sm text-white/90 leading-relaxed max-h-44 overflow-auto pr-2 whitespace-pre-wrap">
+                    {summary}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/10">
+                   <div>
+                     <span className="text-xs font-bold uppercase tracking-widest text-zinc-300">Stability</span>
+                     <div className={clsx("text-sm font-black uppercase mt-1", assessment.mergeReadiness === 'Recommended' ? 'text-green-400' : 'text-amber-400')}>
+                       {assessment.mergeReadiness}
+                     </div>
+                   </div>
+                   <div className="text-xs text-zinc-400">{comments.length} findings</div>
                 </div>
               </div>
            </section>
