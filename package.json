@@ -1,0 +1,85 @@
+{
+  "name": "reviewscope",
+  "version": "0.0.1",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build:packages": "npm run build -w @reviewscope/llm-core && npm run build -w @reviewscope/rules-engine && npm run build -w @reviewscope/security && npm run build -w @reviewscope/context-engine",
+    "build:apps": "npm run build -w @reviewscope/api && npm run build -w @reviewscope/worker && npm run build -w @reviewscope/dashboard",
+    "build": "npm run build:packages && npm run build:apps",
+    "build:api-only": "npm run build:packages && npm run build -w @reviewscope/api && npm run build -w @reviewscope/worker",
+    "bun:build:packages": "bun run --filter @reviewscope/llm-core build && bun run --filter @reviewscope/rules-engine build && bun run --filter @reviewscope/security build && bun run --filter @reviewscope/context-engine build",
+    "bun:build:apps": "bun run --filter @reviewscope/api build && bun run --filter @reviewscope/worker build && bun run --filter @reviewscope/dashboard build",
+    "bun:build": "bun run bun:build:packages && bun run bun:build:apps",
+    "bun:build:api-only": "bun run bun:build:packages && bun run --filter @reviewscope/api build && bun run --filter @reviewscope/worker build",
+    "dev": "npm run dev --workspaces --if-present",
+    "dev:api": "npm run dev -w @reviewscope/api",
+    "dev:worker": "npm run dev -w @reviewscope/worker",
+    "dev:dashboard": "npm run dev -w @reviewscope/dashboard",
+    "start": "npm run start --workspaces --if-present",
+    "start:api": "npm run start -w @reviewscope/api",
+    "start:worker": "npm run start -w @reviewscope/worker",
+    "start:dashboard": "npm run start -w @reviewscope/dashboard",
+    "bun:dev": "bun run --filter '*' dev",
+    "bun:dev:api": "bun run --filter @reviewscope/api dev",
+    "bun:dev:worker": "bun run --filter @reviewscope/worker dev",
+    "bun:dev:dashboard": "bun run --filter @reviewscope/dashboard dev",
+    "bun:start": "bun run --filter '*' start",
+    "bun:start:api": "bun run --filter @reviewscope/api start",
+    "bun:start:worker": "bun run --filter @reviewscope/worker start",
+    "bun:start:dashboard": "bun run --filter @reviewscope/dashboard start",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -b",
+    "db:generate": "bun run --filter @reviewscope/api db:generate",
+    "db:migrate": "bun run --filter @reviewscope/api db:migrate",
+    "db:push": "bun run --filter @reviewscope/api db:push",
+    "db:studio": "bun run --filter @reviewscope/api db:studio",
+    "db:drop": "bun run --filter @reviewscope/api db:drop"
+  },
+  "devDependencies": {
+    "@types/babel__traverse": "^7.28.0",
+    "@types/node": "^25.9.1",
+    "@typescript-eslint/eslint-plugin": "^8.59.4",
+    "@typescript-eslint/parser": "^8.59.4",
+    "eslint": "^9.39.4",
+    "prettier": "^3.8.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "overrides": {
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "typescript-eslint": "8.59.4",
+    "postcss": "8.5.15",
+    "esbuild": "0.28.0",
+    "next-auth": {
+      "uuid": "11.1.1"
+    }
+  },
+  "dependencies": {
+    "@babel/parser": "^7.29.3",
+    "@babel/traverse": "^7.29.0",
+    "@google/genai": "^2.6.0",
+    "@qdrant/js-client-rest": "^1.18.0",
+    "drizzle-kit": "^0.31.10",
+    "eslint-config-next": "16.2.6",
+    "mime": "^4.1.0",
+    "sarvamai": "^1.1.7",
+    "tree-sitter-c": "^0.24.1",
+    "tree-sitter-cpp": "^0.23.4",
+    "tree-sitter-go": "^0.25.0",
+    "tree-sitter-java": "^0.23.5",
+    "tree-sitter-python": "^0.25.0",
+    "type": "^2.7.3",
+    "web-tree-sitter": "^0.26.9"
+  }
+}

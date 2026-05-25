@@ -1,0 +1,26 @@
+{
+  "name": "@reviewscope/context-engine",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@qdrant/js-client-rest": "^1.18.0",
+    "@reviewscope/llm-core": "*",
+    "axios": "^1.16.1",
+    "redis": "^5.12.1",
+    "uuid": "^14.0.0"
+  },
+  "devDependencies": {}
+}

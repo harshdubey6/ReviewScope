@@ -1,0 +1,28 @@
+{
+  "name": "@reviewscope/worker",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/apps/worker/src/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch --env-file=.env src/index.ts",
+    "start": "node --env-file=.env dist/apps/worker/src/index.js"
+  },
+  "dependencies": {
+    "@octokit/app": "^16.1.2",
+    "@octokit/rest": "^22.0.1",
+    "@reviewscope/context-engine": "*",
+    "@reviewscope/llm-core": "*",
+    "@reviewscope/rules-engine": "*",
+    "@reviewscope/security": "*",
+    "bullmq": "^5.77.1",
+    "drizzle-orm": "^0.45.2",
+    "picomatch": "^4.0.4",
+    "postgres": "^3.4.9"
+  },
+  "devDependencies": {
+    "@types/picomatch": "^4.0.3",
+    "tsx": "^4.22.3"
+  }
+}

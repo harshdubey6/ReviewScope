@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowSyntheticDefaultImports": true,
+    "paths": {
+      "@reviewscope/api": ["./apps/api"],
+      "@reviewscope/api/*": ["./apps/api/*"],
+      "@reviewscope/security": ["./packages/security"],
+      "@reviewscope/security/*": ["./packages/security/*"],
+      "@reviewscope/llm-core": ["./packages/llm-core"],
+      "@reviewscope/llm-core/*": ["./packages/llm-core/*"],
+      "@reviewscope/context-engine": ["./packages/context-engine"],
+      "@reviewscope/context-engine/*": ["./packages/context-engine/*"],
+      "@reviewscope/rules-engine": ["./packages/rules-engine"],
+      "@reviewscope/rules-engine/*": ["./packages/rules-engine/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}

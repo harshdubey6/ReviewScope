@@ -1,0 +1,71 @@
+# Stop and remove containers
+# docker compose -f docker-compose.prod.yml down
+
+# Build and start 
+# docker compose -f docker-compose.prod.yml up -d --build
+
+services:
+  redis:
+    image: redis:alpine
+    container_name: reviewscope-redis
+    restart: always
+    volumes:
+      - redis_data:/data
+    # Internal port 6379 is available to other services on the 'app-network'
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api
+    container_name: reviewscope-api
+    restart: always
+    ports:
+      - "3001:3000" # Map host 3001 to container 3000
+    env_file:
+      - ./.env
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: worker
+    container_name: reviewscope-worker
+    restart: always
+    env_file:
+      - ./.env
+    environment:
+      - NODE_ENV=production
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dashboard
+    container_name: reviewscope-dashboard
+    restart: always
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./.env
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - REDIS_URL=redis://redis:6379
+      - INTERNAL_API_URL=http://api:3000
+      - NEXT_PUBLIC_NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+    depends_on:
+      - redis
+      - api
+
+volumes:
+  redis_data:
