@@ -41,6 +41,11 @@ export class RAGIndexer {
         field_schema: 'keyword',
         wait: true,
       });
+      await client.createPayloadIndex(COLLECTION_NAME, {
+        field_name: 'batchId',
+        field_schema: 'keyword',
+        wait: true,
+      });
     } catch (e) {
       // Ignore if already exists
     }

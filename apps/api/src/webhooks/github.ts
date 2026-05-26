@@ -8,7 +8,7 @@ import {
   getIndexingQueue,
   getChatQueue 
 } from '../lib/queue.js';
-import { db, installations, repositories, configs } from '../db/index.js';
+import { db, installations, repositories } from '../db/index.js';
 import { eq, and } from 'drizzle-orm';
 import { GitHubClient } from '../../../worker/src/lib/github.js';
 import { getPlanLimits } from '../../../worker/src/lib/plans.js';
@@ -185,9 +185,6 @@ githubWebhook.post('/', async (c) => {
       console.warn(`[Webhook] Skipping PR #${pr.number}: Installation ${installation.id} is ${dbInst?.status || 'not found'}`);
       return c.json({ status: 'ignored_inactive_installation' });
     }
-
-    // COMPLIANCE: Enforce maxRepos limit based on plan
-    const limits = getPlanLimits(dbInst.planId);
     
     // Check if this repository is already registered
     await db.select().from(repositories).where(
@@ -214,17 +211,28 @@ githubWebhook.post('/', async (c) => {
       }, 
     }).returning();
 
+    if (!dbRepo.indexedAt) {
+      try {
+        await enqueueIndexingJob({
+          installationId: installation.id,
+          repositoryId: repo.id,
+          repositoryFullName: repo.full_name,
+        });
+        console.warn(`[Webhook] Enqueued indexing job for PR repo ${repo.full_name}`);
+      } catch (err) {
+        console.error(`[Webhook] Failed to enqueue indexing job for PR repo ${repo.full_name}:`, err);
+      }
+    }
+
 
     if (dbRepo.status !== 'active') {
       console.warn(`[Webhook] Skipping PR #${pr.number}: Repository ${repo.full_name} is ${dbRepo.status}`);
       return c.json({ status: 'ignored_inactive_repo' });
     }
 
-    const [config] = await db.select().from(configs).where(eq(configs.installationId, dbInst.id)).limit(1);
+    const limits = getPlanLimits(dbInst.planId);
 
-    // Plan-based provider and API-key checks removed — reviews proceed if webhook and repo are active.
-
-    // Check monthly limit
+    // Reviews proceed if webhook and repo are active.
     try {
       await checkRateLimits(dbInst.id, dbRepo.id, pr.number, pr.head.sha, limits);
     } catch (error) {
@@ -326,7 +334,6 @@ githubWebhook.post('/', async (c) => {
 
     try {
       if (body.includes('re-review')) {
-        const [config] = await db.select().from(configs).where(eq(configs.installationId, dbInst.id)).limit(1);
         // Plan gating removed for re-review commands; proceed if repo and installation are active.
 
         // Get PR details first to get the HEAD SHA
@@ -546,6 +553,17 @@ githubWebhook.post('/', async (c) => {
               status: 'active'
             },
           });
+
+          try {
+            await enqueueIndexingJob({
+              installationId: instId,
+              repositoryId: repo.id,
+              repositoryFullName: repo.full_name,
+            });
+            console.warn(`[Webhook] Enqueued indexing job for installed repo ${repo.full_name}`);
+          } catch (err) {
+            console.error(`[Webhook] Failed to enqueue indexing for installed repo ${repo.full_name}:`, err);
+          }
         }
       }
       return c.json({ status: 'installed' });
@@ -585,13 +603,24 @@ githubWebhook.post('/', async (c) => {
               status: 'active'
             },
           });
+
+        try {
+          await enqueueIndexingJob({
+            installationId: installation.id,
+            repositoryId: repo.id,
+            repositoryFullName: repo.full_name,
+          });
+          console.warn(`[Webhook] Enqueued indexing job for added repo ${repo.full_name}`);
+        } catch (err) {
+          console.error(`[Webhook] Failed to enqueue indexing for added repo ${repo.full_name}:`, err);
+        }
       }
 
       // Provide feedback
       return c.json({ 
         status: 'repositories_added', 
         count: repositories_added.length, 
-        indexed: false, // No longer auto-indexing
+        indexed: true,
       });
     }
 

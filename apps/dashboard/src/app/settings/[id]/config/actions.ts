@@ -131,7 +131,6 @@ export async function updateConfig(installationId: string, formData: FormData) {
   }
 
   const { provider, model, customPrompt, apiKey, smartRouting } = validatedFields.data;
-  const limits = getPlanLimits(installation.planId, installation.expiresAt);
 
   try {
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -177,9 +176,10 @@ export async function updateConfig(installationId: string, formData: FormData) {
       });
     }
 
-    // Trigger Indexing if API key was provided/updated
-    const shouldIndex = (apiKeyChanged || (!existingConfig?.apiKeyEncrypted && apiKeyEncrypted)) && limits.allowRAG;
-    console.warn(`[Config] Update successful. apiKeyChanged: ${apiKeyChanged}, newlyAdded: ${!existingConfig?.apiKeyEncrypted && !!apiKeyEncrypted}, allowRAG: ${limits.allowRAG}, shouldIndex: ${shouldIndex}`);
+    const providerChanged = existingConfig?.provider !== provider;
+    const modelChanged = existingConfig?.model !== model;
+    const shouldIndex = !existingConfig || providerChanged || modelChanged || apiKeyChanged;
+    console.warn(`[Config] Update successful. providerChanged: ${providerChanged}, modelChanged: ${modelChanged}, apiKeyChanged: ${apiKeyChanged}, shouldIndex: ${shouldIndex}`);
 
     if (shouldIndex) {
       // Trigger indexing for all active repositories in this installation

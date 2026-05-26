@@ -316,13 +316,10 @@ export default async function DashboardPage({
                     </tr>
                   ) : (
                     configuredRepos.map((repo) => {
-                      const limits = getPlanLimits(repo.planId, repo.expiresAt);
-                      
                       return (
                         <RepoRow 
                           key={repo.id}
                           repo={repo}
-                          limits={limits}
                         />
                       );
                     })
@@ -361,14 +358,8 @@ export default async function DashboardPage({
               userInstallations
                 .filter(inst => inst.status === 'active')
                 .map((inst) => {
-                  const plan = (inst.planName === 'None' || !inst.planName) ? 'Free' : inst.planName;
                   const limits = getPlanLimits(inst.planId, inst.expiresAt);
                   const activeRepos = userRepos.filter(r => r.installationId === inst.id).length;
-
-                  const planStyles: Record<string, string> = {
-                    FREE: "bg-zinc-100 text-zinc-600 border border-zinc-200",
-                    PRO: "bg-blue-50 text-blue-700 border border-blue-200",
-                  };
 
                   return (
                     <div key={inst.id} className="bg-white border border-zinc-200/60 rounded-2xl p-5 shadow-sm space-y-4 hover:border-zinc-300 transition-colors">
@@ -376,9 +367,6 @@ export default async function DashboardPage({
                         <div>
                           <h4 className="font-bold text-zinc-900 text-sm">{inst.accountName}</h4>
                           <span className="text-xs font-medium text-zinc-400">GitHub Account</span>
-                        </div>
-                        <div className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${planStyles[limits.tier]}`}>
-                          {plan}
                         </div>
                       </div>
 
@@ -391,7 +379,6 @@ export default async function DashboardPage({
                           <span className="text-zinc-500 font-medium">Context Window</span>
                           <span className="font-bold text-zinc-900">{limits.ragK}</span>
                         </div>
-                        {/* Feature tier badges removed — features unlocked for all plans */}
                       </div>
 
                       <Link

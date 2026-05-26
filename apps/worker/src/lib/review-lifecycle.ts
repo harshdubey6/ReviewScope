@@ -6,8 +6,7 @@ import type { ReviewScopeConfig } from '@reviewscope/rules-engine';
 import { calculateComplexity } from './complexity.js';
 import { runRules } from '@reviewscope/rules-engine';
 import { RAGRetriever, RAGIndexer } from '@reviewscope/context-engine';
-import { createConfiguredProvider } from './ai-review.js';
-import { resolveEmbeddingModel, shouldSkipEmbeddings } from './embedding-model.js';
+import { createRagEmbeddingProvider, resolveEmbeddingModel } from './embedding-model.js';
 import { runEnhancedAIReview, generateGlobalSummary } from './ai-review-enhanced.js';
 import { db, reviews, repositories, installations, configs } from '../../../api/src/db/index.js';
 import { eq, and } from 'drizzle-orm';
@@ -115,10 +114,8 @@ export async function filterAndRefineFiles(
 export async function fetchRAGContext(
   data: ReviewJobData,
   dbRepo: typeof repositories.$inferSelect,
-  dbInst: typeof installations.$inferSelect,
   limits: PlanLimits,
-  filteredFiles: ParsedFile[],
-  selectedModel?: string
+  filteredFiles: ParsedFile[]
 ): Promise<string> {
   // Guard: Small PRs shouldn't hit vector search
   if (filteredFiles.length < 2) {
@@ -137,18 +134,13 @@ export async function fetchRAGContext(
   }
 
   try {
-    const { provider } = await createConfiguredProvider(dbInst.id);
-    if (shouldSkipEmbeddings(provider.name, selectedModel)) {
-      console.warn(`[Review] RAG OFF: embeddings skipped for provider=${provider.name} model=${selectedModel || 'default'}`);
-      return '';
-    }
-
-    const embeddingModel = resolveEmbeddingModel(provider);
-    console.warn(`[Review] RAG embedding model: ${provider.name}/${embeddingModel}`);
-    const indexer = new RAGIndexer(provider, { embeddingModel });
+    const ragEmbeddings = createRagEmbeddingProvider();
+    const embeddingModel = resolveEmbeddingModel();
+    console.warn(`[Review] RAG embedding model: ${ragEmbeddings.name}/${embeddingModel}`);
+    const indexer = new RAGIndexer(ragEmbeddings, { embeddingModel });
     await indexer.ensureCollection();
 
-    const retriever = new RAGRetriever(provider, { embeddingModel });
+    const retriever = new RAGRetriever(ragEmbeddings, { embeddingModel });
     const query = `PR: ${data.prTitle}\nFiles: ${filteredFiles.map(f => f.path).join(', ')}`;
     
     const results = await retriever.retrieve(data.repositoryId.toString(), query, limits.ragK);

@@ -16,7 +16,6 @@ import {
   disableInstallation, 
   reindexRepository, 
   clearRepositoryVectors,
-  updateInstallationPlan
 } from './actions';
 
 const timeAgo = (date: Date | null) => {
@@ -52,10 +51,6 @@ type Installation = {
   githubInstallationId: number;
   accountName: string;
   accountType: 'User' | 'Organization';
-  planName: string | null;
-  planLimits: {
-    tier: 'FREE' | 'PRO' | 'TEAM';
-  };
   swapCount: number;
   lastSwapReset: Date | null;
   status: 'active' | 'suspended' | 'inactive' | 'deleted';
@@ -63,16 +58,6 @@ type Installation = {
   provider: string | null;
   createdAt: Date;
   repositories: Repo[];
-};
-
-const getPlanBadgeClasses = (tier: Installation['planLimits']['tier']) => {
-  if (tier === 'TEAM') {
-    return 'bg-purple-500/10 text-purple-600 dark:text-purple-300';
-  }
-  if (tier === 'PRO') {
-    return 'bg-blue-500/10 text-blue-600 dark:text-blue-300';
-  }
-  return 'bg-zinc-500/10 text-zinc-700 dark:text-zinc-300';
 };
 
 export function AdminView({ 
@@ -162,12 +147,11 @@ export function AdminView({
       <div className="bg-card border rounded-lg overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <div className="min-w-250">
-            <div className="grid grid-cols-[auto_2fr_1fr_1fr_1fr_1.5fr_auto] gap-4 p-4 bg-muted/30 font-medium text-sm border-b">
+            <div className="grid grid-cols-[auto_2fr_1fr_1fr_1.5fr_auto] gap-4 p-4 bg-muted/30 font-medium text-sm border-b">
           <div className="w-6"></div>
           <div>Account</div>
           <div>Status</div>
           <div>API Key</div>
-          <div>Plan</div>
           <div>Created</div>
           <div className="text-right">Actions</div>
         </div>
@@ -179,7 +163,7 @@ export function AdminView({
         {data.map((inst) => (
           <div key={inst.id} className="border-b last:border-0">
             {/* Top Row: Installation */}
-            <div className={`grid grid-cols-[auto_2fr_1fr_1fr_1fr_1.5fr_auto] gap-4 p-4 items-center hover:bg-muted/10 transition-colors ${expandedIds.has(inst.id) ? 'bg-muted/20' : ''}`}>
+            <div className={`grid grid-cols-[auto_2fr_1fr_1fr_1.5fr_auto] gap-4 p-4 items-center hover:bg-muted/10 transition-colors ${expandedIds.has(inst.id) ? 'bg-muted/20' : ''}`}>
               <button onClick={() => toggleExpand(inst.id)} className="p-1 hover:bg-muted rounded-sm transition-colors cursor-pointer">
                 {expandedIds.has(inst.id) ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
               </button>
@@ -216,35 +200,9 @@ export function AdminView({
               </div>
 
               <div className="text-sm">
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wide ${getPlanBadgeClasses(inst.planLimits.tier)}`}
-                    >
-                      {inst.planName || 'Free'}
-                    </span>
-                    <select
-                      value={inst.planName || 'Free'}
-                      onChange={(e) => {
-                        const newPlan = e.target.value;
-                        handleAction(
-                          async () => updateInstallationPlan(inst.id, newPlan),
-                          inst.id,
-                          `Plan change to ${newPlan} for ${inst.accountName}`
-                        );
-                      }}
-                      disabled={isLoading === inst.id}
-                      className="text-xs font-medium px-2 py-1 rounded-md border border-border/60 bg-muted/40 hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"
-                    >
-                      <option value="Free">Free</option>
-                      <option value="Pro">Pro</option>
-                      <option value="Team">Team</option>
-                    </select>
-                  </div>
-                  <span className="text-[11px] text-muted-foreground">
-                    Swaps used this period: {inst.swapCount}
-                  </span>
-                </div>
+                <span className="text-[11px] text-muted-foreground">
+                  Swaps used this period: {inst.swapCount}
+                </span>
               </div>
               <div className="text-sm text-muted-foreground">{timeAgo(inst.createdAt)}</div>
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { GitBranch, CheckCircle2, Clock, Lock, Calendar } from 'lucide-react';
+import { GitBranch, CheckCircle2, Clock, Calendar } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 interface RepoRowProps {
@@ -11,12 +11,9 @@ interface RepoRowProps {
     indexedAt: Date | null;
     lastReviewAt: Date | null;
   };
-  limits: {
-    allowRAG: boolean;
-  };
 }
 
-export function RepoRow({ repo, limits }: RepoRowProps) {
+export function RepoRow({ repo }: RepoRowProps) {
   const router = useRouter();
 
   const handleRowClick = () => {
@@ -44,24 +41,15 @@ export function RepoRow({ repo, limits }: RepoRowProps) {
         </div>
       </td>
       <td className="px-3 sm:px-6 py-4">
-        {(() => {
-          if (!limits.allowRAG) {
-            return (
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-100 text-zinc-500 border border-zinc-200 text-[10px] font-bold uppercase tracking-wider">
-                <Lock className="w-3 h-3" /> Basic
-              </div>
-            );
-          }
-          return repo.indexedAt ? (
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-green-50 text-green-700 border border-green-200/50 text-[10px] font-bold uppercase tracking-wider">
-              <CheckCircle2 className="w-3 h-3" /> Indexed
-            </div>
-          ) : (
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 border border-blue-200/50 text-[10px] font-bold uppercase tracking-wider animate-pulse">
-              <Clock className="w-3 h-3" /> Indexing
-            </div>
-          );
-        })()}
+        {repo.indexedAt ? (
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-green-50 text-green-700 border border-green-200/50 text-[10px] font-bold uppercase tracking-wider">
+            <CheckCircle2 className="w-3 h-3" /> Indexed
+          </div>
+        ) : (
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 border border-blue-200/50 text-[10px] font-bold uppercase tracking-wider animate-pulse">
+            <Clock className="w-3 h-3" /> Indexing
+          </div>
+        )}
       </td>
       <td className="px-6 py-4 hidden md:table-cell">
         {repo.lastReviewAt ? (

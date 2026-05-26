@@ -38,7 +38,6 @@ export default async function ConfigPage({ params }: { params: Promise<{ id: str
     .where(eq(configs.installationId, id))
     .limit(1);
 
-  const plan = installation.planName || 'None';
   const limits = getPlanLimits(installation.planId, installation.expiresAt);
 
   // Get monthly usage
@@ -85,64 +84,42 @@ export default async function ConfigPage({ params }: { params: Promise<{ id: str
       </header>
 
       <div className="space-y-8">
-        {/* Plan Status Card */}
-        <div className={clsx(
-          "relative overflow-hidden p-6 rounded-3xl border transition-all",
-          plan === 'None' 
-            ? "bg-red-50/50 border-red-100" 
-            : "bg-white border-zinc-200 shadow-sm"
-        )}>
+        {/* Configuration Summary */}
+        <div className="relative overflow-hidden p-6 rounded-3xl border bg-white border-zinc-200 shadow-sm">
           <div className="flex items-start gap-5">
-            <div className={clsx(
-              "p-3 rounded-xl shrink-0",
-              plan === 'None' ? "bg-red-100 text-red-600" : "bg-blue-50 text-blue-600"
-            )}>
-              {plan === 'None' ? <ShieldCheck className="w-6 h-6" /> : <Sparkles className="w-6 h-6" />}
+            <div className="p-3 rounded-xl shrink-0 bg-blue-50 text-blue-600">
+              <Sparkles className="w-6 h-6" />
             </div>
-            
+
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-1">
-                <h3 className={clsx(
-                  "font-bold text-base",
-                  plan === 'None' ? "text-red-900" : "text-zinc-900"
-                )}>
-                  {plan === 'None' ? 'Subscription Required' : 'Active Plan'}
+                <h3 className="font-bold text-base text-zinc-900">
+                  Configuration Ready
                 </h3>
-                {plan !== 'None' && (
-                  <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-blue-100 text-blue-700 border border-blue-200">
-                    {plan}
-                  </span>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-zinc-600 mt-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-zinc-300"></span>
+                  RAG snippets: <span className="font-bold text-zinc-900">{limits.ragK}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-zinc-300"></span>
+                  Cooldown: <span className="font-bold text-zinc-900">{limits.cooldownMinutes}m</span>
+                </div>
+                {limits.monthlyReviewsLimit < Infinity && (
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-zinc-300"></span>
+                    Monthly Reviews:
+                    <span className={clsx(
+                      "font-bold",
+                      usageCount >= limits.monthlyReviewsLimit ? "text-red-600" : "text-zinc-900"
+                    )}>
+                      {usageCount}/{limits.monthlyReviewsLimit}
+                    </span>
+                  </div>
                 )}
               </div>
-              
-              {plan === 'None' ? (
-                 <p className="text-sm text-zinc-600 font-medium">
-                   No subscription required — AI review features are unlocked.
-                 </p>
-              ) : (
-                  <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-zinc-600 mt-2">
-                  <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-zinc-300"></span>
-                    RAG snippets: <span className="font-bold text-zinc-900">{limits.ragK}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-zinc-300"></span>
-                    Cooldown: <span className="font-bold text-zinc-900">{limits.cooldownMinutes}m</span>
-                  </div>
-                  {limits.monthlyReviewsLimit < Infinity && (
-                    <div className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-zinc-300"></span>
-                      Monthly Reviews: 
-                      <span className={clsx(
-                        "font-bold",
-                        usageCount >= limits.monthlyReviewsLimit ? "text-red-600" : "text-zinc-900"
-                      )}>
-                        {usageCount}/{limits.monthlyReviewsLimit}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -151,7 +128,6 @@ export default async function ConfigPage({ params }: { params: Promise<{ id: str
         <ConfigForm 
           key={JSON.stringify(config)}
           installationId={id}
-          plan={plan}
           initialConfig={config ? {
             provider: config.provider,
             model: config.model,

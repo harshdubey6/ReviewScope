@@ -1,7 +1,7 @@
 import { GitHubClient } from '../lib/github.js';
 import { RAGRetriever, RAGIndexer, ContextAssembler, systemGuardrailsLayer, repoMetadataLayer, complexityAssessmentLayer, issueIntentLayer, ruleViolationsLayer, relatedFilesLayer, ragContextLayer, webContextLayer, focusedContextLayer, prDiffLayer, userPromptLayer, userQuestionLayer } from '@reviewscope/context-engine';
 import { createConfiguredProvider } from '../lib/ai-review.js';
-import { resolveEmbeddingModel, shouldSkipEmbeddings } from '../lib/embedding-model.js';
+import { createRagEmbeddingProvider, resolveEmbeddingModel } from '../lib/embedding-model.js';
 import { CHAT_SYSTEM_PROMPT } from '@reviewscope/llm-core';
 import { db, repositories, installations, configs } from '../../../api/src/db/index.js';
 import { eq, and } from 'drizzle-orm';
@@ -70,19 +70,17 @@ ${parentComment.body}
     // 3. RAG Retrieval
     let ragContext = '';
     if (dbRepo?.indexedAt) {
-      const { provider } = await createConfiguredProvider(dbInst.id);
-      if (!shouldSkipEmbeddings(provider.name, config?.model)) {
-        const embeddingModel = resolveEmbeddingModel(provider);
-        console.warn(`[Chat] RAG embedding model: ${provider.name}/${embeddingModel}`);
+      const ragEmbeddings = createRagEmbeddingProvider();
+      const embeddingModel = resolveEmbeddingModel();
+      console.warn(`[Chat] RAG embedding model: ${ragEmbeddings.name}/${embeddingModel}`);
 
-        // Ensure index exists (fixes the 400 error)
-        const indexer = new RAGIndexer(provider, { embeddingModel });
-        await indexer.ensureCollection();
+      // Ensure index exists (fixes the 400 error)
+      const indexer = new RAGIndexer(ragEmbeddings, { embeddingModel });
+      await indexer.ensureCollection();
 
-        const retriever = new RAGRetriever(provider, { embeddingModel });
-        const results = await retriever.retrieve(data.repositoryId.toString(), data.userQuestion, 3);
-        ragContext = results.map(r => `File: ${r.file}\nSnippet: ${r.content}`).join('\n\n');
-      }
+      const retriever = new RAGRetriever(ragEmbeddings, { embeddingModel });
+      const results = await retriever.retrieve(data.repositoryId.toString(), data.userQuestion, 3);
+      ragContext = results.map(r => `File: ${r.file}\nSnippet: ${r.content}`).join('\n\n');
     }
 
     // 4. Assemble Context using Context Engineering layers (Unified)

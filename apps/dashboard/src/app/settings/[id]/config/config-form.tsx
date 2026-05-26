@@ -22,7 +22,6 @@ import { updateConfig, deleteApiKey, verifyApiKey } from './actions';
 
 type ConfigFormProps = {
   installationId: string;
-  plan?: string;
   initialConfig?: {
     provider: string;
     model: string;
@@ -34,13 +33,11 @@ type ConfigFormProps = {
 
 export function ConfigForm({
   installationId,
-  plan,
   initialConfig,
 }: ConfigFormProps) {
   const router = useRouter();
-  // Plan gating removed — all features unlocked
 
-  const [provider, setProvider] = useState(initialConfig?.provider || 'gemini'); // Default to Gemini
+  const [provider, setProvider] = useState(initialConfig?.provider || 'gemini');
   const [model, setModel] = useState(initialConfig?.model || 'gemini-2.5-flash-lite');
   const [smartRouting, setSmartRouting] = useState(initialConfig?.smartRouting ?? false);
   const [apiKey, setApiKey] = useState('');

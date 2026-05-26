@@ -5,7 +5,6 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { eq, and, desc, count, inArray } from "drizzle-orm";
 import Link from "next/link";
 import { getUserOrgIds } from "@/lib/github";
-import { getPlanLimits } from "../../../../worker/src/lib/plans";
 import clsx from "clsx";
 
 export const dynamic = 'force-dynamic';
@@ -113,9 +112,6 @@ export default async function SettingsPage() {
                         : "bg-purple-50 text-purple-600 border-purple-100"
                     )}>
                       {inst.accountType}
-                    </span>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-zinc-100 text-zinc-600 border border-zinc-200">
-                      {inst.planName || 'Free'} Plan
                     </span>
                   </div>
                 </div>

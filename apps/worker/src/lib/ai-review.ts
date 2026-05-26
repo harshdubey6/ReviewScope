@@ -34,12 +34,17 @@ export async function createConfiguredProvider(installationId?: string): Promise
         return { provider: createProvider(userConfig.provider as any, decryptedKey), smartRouting: userConfig.smartRouting };
       }
 
-      // Sarvam requires an explicit per-installation key on Free tier
-      if (userConfig.provider === 'sarvam') {
-        throw new Error('Sarvam requires a user-provided API key.');
+      const envKey =
+        userConfig.provider === 'sarvam' ? process.env.SARVAM_API_KEY :
+        userConfig.provider === 'openai' ? process.env.OPENAI_API_KEY :
+        userConfig.provider === 'gemini' ? process.env.GEMINI_API_KEY :
+        undefined;
+
+      if (envKey) {
+        return { provider: createProvider(userConfig.provider as any, envKey), smartRouting: userConfig.smartRouting };
       }
-      // For other providers, fallthrough to error: missing key
-      throw new Error('Provider configuration is missing or invalid.');
+
+      throw new Error(`Provider configuration is missing or invalid for ${userConfig.provider}.`);
     }
   }
 

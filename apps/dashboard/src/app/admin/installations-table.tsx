@@ -9,7 +9,6 @@ interface Installation {
   githubInstallationId: number;
   accountName: string;
   accountType: string;
-  planName: string | null;
   createdAt: Date;
   repoCount: number;
   indexedCount: number;
@@ -42,7 +41,6 @@ export function InstallationsTable({ installations }: { installations: Installat
               <th className="p-3 font-medium">Account</th>
               <th className="p-3 font-medium">Type</th>
               <th className="p-3 font-medium">Status</th>
-              <th className="p-3 font-medium">Plan</th>
               <th className="p-3 font-medium">Repos</th>
               <th className="p-3 font-medium">API Key</th>
               <th className="p-3 font-medium">Indexing</th>
@@ -80,7 +78,6 @@ export function InstallationsTable({ installations }: { installations: Installat
                       {inst.status}
                     </span>
                   </td>
-                  <td className="p-3">{inst.planName || 'None'}</td>
                   <td className="p-3">
                     <span className="font-mono">{inst.indexedCount}/{inst.repoCount}</span>
                     <span className="text-xs text-muted-foreground ml-1">indexed</span>

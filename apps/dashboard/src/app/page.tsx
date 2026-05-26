@@ -56,7 +56,7 @@ export default async function LandingPage() {
                 className="group relative w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 bg-primary text-primary-foreground rounded-full font-bold text-lg hover:shadow-[0_0_40px_-10px_rgba(var(--primary),0.5)] transition-all hover:-translate-y-1 hover:scale-105 active:scale-95 overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
-                {session ? "Go to Dashboard" : "Start for Free"}
+                {session ? "Go to Dashboard" : "Get Started"}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               {/* Pricing link removed */}
@@ -247,7 +247,7 @@ export default async function LandingPage() {
               { 
                 icon: <Key className="w-6 h-6" />, 
                 title: "Your Keys, Your Costs", 
-                desc: "Free includes Sarvam-M by default. Pro lets you plug in your own OpenAI or Gemini API keys and pay providers directly."
+                desc: "Choose the AI provider that fits your workflow and connect the API keys you want to use."
               },
               { 
                 icon: <Sparkles className="w-6 h-6" />, 
@@ -341,7 +341,7 @@ export default async function LandingPage() {
                 { 
                   step: "04", 
                   title: "AI Validation", 
-                  desc: "Sarvam-M (Free) or Gemini/OpenAI (Pro) validates findings and provides actionable, human-like feedback.",
+                  desc: "Sarvam-M or Gemini/OpenAI validates findings and provides actionable, human-like feedback.",
                   icon: <CheckCircle2 className="w-6 h-6 text-green-500" />
                 }
               ].map((item, i) => (

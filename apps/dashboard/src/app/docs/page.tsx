@@ -180,9 +180,9 @@ export default function DocsPage() {
                         </h5>
                         <ul className="space-y-3">
                           {[
-                            { label: 'Sarvam-M (Free)', sub: 'Default model on Free plan', recommended: true },
-                            { label: 'Google Gemini (Pro)', sub: 'Bring your own API key' },
-                            { label: 'OpenAI (Pro)', sub: 'Bring your own API key' }
+                            { label: 'Sarvam-M', sub: 'Default server-managed model', recommended: true },
+                            { label: 'Google Gemini', sub: 'Bring your own API key' },
+                            { label: 'OpenAI', sub: 'Bring your own API key' }
                           ].map((provider) => (
                             <li key={provider.label} className={clsx("flex items-start gap-3 p-3 rounded-lg border", provider ? "bg-zinc-50 border-zinc-100 opacity-60" : "bg-white border-zinc-100 shadow-sm")}>
                               <div className={clsx("mt-1 w-2 h-2 rounded-full", provider ? "bg-zinc-300" : "bg-green-500")} />

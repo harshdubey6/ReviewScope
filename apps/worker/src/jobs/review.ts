@@ -242,7 +242,7 @@ export async function processReviewJob(data: ReviewJobData, _job?: Job): Promise
     const author = prDetails.user?.login || 'author';
     
     const issueContext = await getIssueContext(gh, data);
-    const ragContext = await fetchRAGContext(data, dbRepo, dbInst, limits, aiReviewFiles, config?.ai?.model);
+    const ragContext = await fetchRAGContext(data, dbRepo, limits, aiReviewFiles);
     console.warn(`[Worker] RAG status for PR #${data.prNumber}: ${ragContext ? 'ON' : 'OFF'}${ragContext ? ` (${ragContext.length} chars of retrieved context)` : ''}`);
     // const relatedContext = ''; // Placeholder
 

@@ -1,11 +1,9 @@
 /* eslint-disable no-console */
 import { GitHubClient } from '../lib/github.js';
 import { RAGIndexer } from '@reviewscope/context-engine';
-import { createConfiguredProvider } from '../lib/ai-review.js';
-import { resolveEmbeddingModel, shouldSkipEmbeddings } from '../lib/embedding-model.js';
-import { db, repositories, installations, configs } from '../../../api/src/db/index.js';
+import { createRagEmbeddingProvider, resolveEmbeddingModel } from '../lib/embedding-model.js';
+import { db, repositories, installations } from '../../../api/src/db/index.js';
 import { eq } from 'drizzle-orm';
-import { getPlanLimits } from '../lib/plans.js';
 
 export interface IndexingJobData {
   installationId: number;
@@ -47,20 +45,6 @@ export async function processIndexingJob(data: IndexingJobData): Promise<void> {
       return;
     }
 
-    // SAAS RULE: Check if plan allows RAG
-    const limits = getPlanLimits(dbInst.planId);
-    if (!limits.allowRAG) {
-      console.warn(`[Index] Skipping: Plan ${limits.tier} does not include RAG indexing for ${data.repositoryFullName}`);
-      return;
-    }
-
-    // SAAS RULE 2: Index only after API key exists (Don't use server credits for user indexing)
-    const [userConfig] = await db.select().from(configs).where(eq(configs.installationId, dbInst.id));
-    if (!userConfig?.apiKeyEncrypted) {
-      console.warn(`[Index] Skipping: No custom API key provided by user for installation ${dbInst.id}. (Required for RAG)`);
-      return;
-    }
-
     console.warn(`[Index] Found DB installation: ${dbInst.id} for GitHub installation: ${data.installationId}`);
 
     // Check if repo is a fork
@@ -84,13 +68,10 @@ export async function processIndexingJob(data: IndexingJobData): Promise<void> {
     const files = await gh.getRepositoryFiles(data.installationId, owner, repo);
     
     // 2. Setup RAG Indexer
-    const { provider } = await createConfiguredProvider(dbInst.id);
-    if (shouldSkipEmbeddings(provider.name, userConfig?.model)) {
-      return;
-    }
-    const embeddingModel = resolveEmbeddingModel(provider);
-    console.warn(`[Index] RAG embedding model: ${provider.name}/${embeddingModel}`);
-    const indexer = new RAGIndexer(provider, { embeddingModel });
+    const ragEmbeddings = createRagEmbeddingProvider();
+    const embeddingModel = resolveEmbeddingModel();
+    console.warn(`[Index] RAG embedding model: ${ragEmbeddings.name}/${embeddingModel}`);
+    const indexer = new RAGIndexer(ragEmbeddings, { embeddingModel });
 
     // 3. Index into Qdrant
     console.warn(`Indexing ${files.length} files into vector database...`);
