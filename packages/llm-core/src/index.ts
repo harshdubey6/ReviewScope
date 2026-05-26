@@ -1,12 +1,12 @@
 // Types
-export * from './types';
+export * from './types.js';
 
 // Model budgets and selection
 export {
   MODEL_CONTEXT_BUDGET,
   getContextBudget,
   isModelSupported,
-} from './modelBudgets';
+} from './modelBudgets.js';
 
 export {
   selectModel,
@@ -14,9 +14,9 @@ export {
   estimateCost,
   compareCosts,
   type ModelRoute,
-} from './selectModel';
+} from './selectModel.js';
 
-export type { Complexity } from './selectModel';
+export type { Complexity } from './selectModel.js';
 
 // Prompts
 export {
@@ -34,17 +34,17 @@ export {
   type PRSummaryResult,
   type RuleValidation,
   type RuleValidationStatus,
-} from './prompts';
+} from './prompts.js';
 
 // Providers
-import { OpenAIProvider } from './providers/openai';
-import { GeminiProvider } from './providers/gemini';
-import { SarvamProvider } from './providers/sarvam';
+import { OpenAIProvider } from './providers/openai.js';
+import { GeminiProvider } from './providers/gemini.js';
+import { SarvamProvider } from './providers/sarvam.js';
 
 export { OpenAIProvider, GeminiProvider, SarvamProvider };
 
 // Provider factory
-import type { LLMProvider } from './types';
+import type { LLMProvider } from './types.js';
 
 export type ProviderName = 'openai' | 'gemini' | 'sarvam';
 

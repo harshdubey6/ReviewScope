@@ -1,6 +1,6 @@
 
 import { db, apiUsageLogs } from '../../../api/src/db/index.js';
-import { eq, and, gt, asc } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { PlanLimits } from './plans.js';
 
 export class RateLimitError extends Error {
@@ -14,11 +14,11 @@ export class RateLimitError extends Error {
 }
 
 export async function checkRateLimits(
-  installationId: string,
-  repositoryId: string,
-  prNumber: number,
-  commitSha: string,
-  limits: PlanLimits
+  _installationId: string,
+  _repositoryId: string,
+  _prNumber: number,
+  _commitSha: string,
+  _limits: PlanLimits
 ) {
   // Rate limiting and monthly review cycle removed — no-op for cleaned build.
   return;

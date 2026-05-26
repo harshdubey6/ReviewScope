@@ -1,7 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 import { GoogleGenerativeAI, type GenerateContentResult } from '@google/generative-ai';
-import type { LLMProvider, Message, ChatOptions, ChatResponse, EmbeddingProvider, EmbeddingOptions } from '../types';
-import { LLMRateLimitError } from '../types';
+import type { LLMProvider, Message, ChatOptions, ChatResponse, EmbeddingProvider, EmbeddingOptions } from '../types.js';
+import { LLMRateLimitError } from '../types.js';
 
 export class GeminiProvider implements LLMProvider, EmbeddingProvider {
   name = 'gemini';

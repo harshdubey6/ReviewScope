@@ -1,6 +1,6 @@
 import { SarvamAIClient } from 'sarvamai';
 import type { SarvamAI } from 'sarvamai';
-import type { LLMProvider, Message, ChatOptions, ChatResponse, EmbeddingProvider, EmbeddingOptions } from '../types';
+import type { LLMProvider, Message, ChatOptions, ChatResponse, EmbeddingProvider, EmbeddingOptions } from '../types.js';
 
 export class SarvamProvider implements LLMProvider, EmbeddingProvider {
   name = 'sarvam';

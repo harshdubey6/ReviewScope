@@ -2,17 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@reviewscope/api": ["../api/src/index.ts"],
-      "@reviewscope/api/*": ["../api/src/*"],
-      "@reviewscope/security": ["../../packages/security/src/index.ts"],
-      "@reviewscope/security/*": ["../../packages/security/src/*"],
-      "@reviewscope/llm-core": ["../../packages/llm-core/src/index.ts"],
-      "@reviewscope/llm-core/*": ["../../packages/llm-core/src/*"],
-      "@reviewscope/context-engine": ["../../packages/context-engine/src/index.ts"],
-      "@reviewscope/context-engine/*": ["../../packages/context-engine/src/*"],
-      "@reviewscope/rules-engine": ["../../packages/rules-engine/src/index.ts"],
-      "@reviewscope/rules-engine/*": ["../../packages/rules-engine/src/*"]
+      "@/*": ["src/*"]
     }
   }
 }

@@ -121,12 +121,28 @@ export async function fetchRAGContext(
   selectedModel?: string
 ): Promise<string> {
   // Guard: Small PRs shouldn't hit vector search
-  if (filteredFiles.length < 2) return '';
-  if (!dbRepo.indexedAt || !limits.allowRAG) return '';
+  if (filteredFiles.length < 2) {
+    console.warn(`[Review] RAG OFF: only ${filteredFiles.length} relevant file(s) after filtering`);
+    return '';
+  }
+
+  if (!dbRepo.indexedAt) {
+    console.warn('[Review] RAG OFF: repository has not been indexed yet (indexedAt is null)');
+    return '';
+  }
+
+  if (!limits.allowRAG) {
+    console.warn('[Review] RAG OFF: plan limits do not allow RAG');
+    return '';
+  }
 
   try {
     const { provider } = await createConfiguredProvider(dbInst.id);
-    if (shouldSkipEmbeddings(provider.name, selectedModel)) return '';
+    if (shouldSkipEmbeddings(provider.name, selectedModel)) {
+      console.warn(`[Review] RAG OFF: embeddings skipped for provider=${provider.name} model=${selectedModel || 'default'}`);
+      return '';
+    }
+
     const embeddingModel = resolveEmbeddingModel(provider);
     console.warn(`[Review] RAG embedding model: ${provider.name}/${embeddingModel}`);
     const indexer = new RAGIndexer(provider, { embeddingModel });
@@ -137,8 +153,11 @@ export async function fetchRAGContext(
     
     const results = await retriever.retrieve(data.repositoryId.toString(), query, limits.ragK);
     if (results.length > 0) {
+      console.warn(`[Review] RAG ON: retrieved ${results.length} result(s) for PR #${data.prNumber}`);
       return results.map(r => `File: ${r.file}\nRelevant Snippet:\n${r.content}`).join('\n\n');
     }
+
+    console.warn(`[Review] RAG OFF: vector search returned 0 results for PR #${data.prNumber}`);
   } catch (e) {
     console.warn('RAG retrieval failed:', e);
   }

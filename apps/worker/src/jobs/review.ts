@@ -184,8 +184,6 @@ export async function processReviewJob(data: ReviewJobData, _job?: Job): Promise
 
     // AI Review Guardrail: Skip if diff is tiny
     // If we have very few changes, skip AI to save cost and avoid hallucinations
-    const totalAdditions = filteredFiles.reduce((sum, f) => sum + f.additions.length, 0);
-    const totalDeletions = filteredFiles.reduce((sum, f) => sum + f.deletions.length, 0);
         // Tiny-diff logging removed — no plan-based skip
     
     // Check for previous identical run (Optimization)
@@ -245,6 +243,7 @@ export async function processReviewJob(data: ReviewJobData, _job?: Job): Promise
     
     const issueContext = await getIssueContext(gh, data);
     const ragContext = await fetchRAGContext(data, dbRepo, dbInst, limits, aiReviewFiles, config?.ai?.model);
+    console.warn(`[Worker] RAG status for PR #${data.prNumber}: ${ragContext ? 'ON' : 'OFF'}${ragContext ? ` (${ragContext.length} chars of retrieved context)` : ''}`);
     // const relatedContext = ''; // Placeholder
 
     // ---------------------------------------------------------

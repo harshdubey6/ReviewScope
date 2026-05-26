@@ -9,7 +9,7 @@
  * Goal: 30-40% cost reduction with no quality loss
  */
 
-import { getContextBudget } from './modelBudgets';
+import { getContextBudget } from './modelBudgets.js';
 
 export type Complexity = 'trivial' | 'simple' | 'complex';
 

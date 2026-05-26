@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import { encodingForModel, type TiktokenModel } from 'js-tiktoken';
-import type { LLMProvider, Message, ChatOptions, ChatResponse, EmbeddingProvider, EmbeddingOptions } from '../types';
-import { LLMRateLimitError } from '../types';
+import type { LLMProvider, Message, ChatOptions, ChatResponse, EmbeddingProvider, EmbeddingOptions } from '../types.js';
+import { LLMRateLimitError } from '../types.js';
 
 export class OpenAIProvider implements LLMProvider, EmbeddingProvider {
   name = 'openai';

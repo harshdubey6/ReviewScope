@@ -1,9 +1,9 @@
 // Encryption
-export { encrypt, decrypt } from './encryption';
+export { encrypt, decrypt } from './encryption.js';
 
 // Masking
 export {
   maskApiKey,
   looksLikeApiKey,
   redactSecrets,
-} from './masking';
+} from './masking.js';
